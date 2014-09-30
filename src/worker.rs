@@ -1,12 +1,3 @@
-/*!
-Generate UUIDs under a distributed environment
-*/
-
-#![crate_name = "rustedflake"]
-#![crate_type = "rlib"]
-#![crate_type = "dylib"]
-#![license = "WTFPL"]
-
 #![feature(macro_rules)]
 #![allow(dead_code)]
 
@@ -17,6 +8,7 @@ extern crate test;
 extern crate time;
 
 use time::Timespec;
+
 
 pub type UuidBytes = i64;
 
@@ -83,7 +75,8 @@ impl IdWorker {
         }
     }
 
-    pub fn next(&mut self) -> Uuid {
+    // TODO(tal): figure out the whole immutable thing for middleware
+    pub fn next(self) -> Uuid {
         // Tue, 21 Mar 2006 20:50:14.000 GMT (first tweet)
         let twepoch:Timespec = Timespec { sec: 1288834974657, nsec: 0 };
 
@@ -95,6 +88,7 @@ impl IdWorker {
             fail!("fix your time, yo!");
         }
 
+        /*
         if curr_time == self.last_time {
             self.sequence_id = (self.sequence_id + 1) & MAX_SEQUENCE_ID;
             if self.sequence_id == 0 {
@@ -105,6 +99,7 @@ impl IdWorker {
         }
 
         self.last_time = curr_time;
+        */
 
         let bytes: UuidBytes = (curr_time - twepoch).num_milliseconds() << TIMESTAMP_SHIFT |
             (self.datacenter_id << DATACENTER_ID_SHIFT) |
@@ -114,7 +109,7 @@ impl IdWorker {
         Uuid::new(bytes)
     }
 
-    fn until_next_time(&mut self) -> Timespec {
+    fn until_next_time(self) -> Timespec {
         let mut t = time::now_utc().to_timespec();
         while t <= self.last_time {
             t = time::now_utc().to_timespec();

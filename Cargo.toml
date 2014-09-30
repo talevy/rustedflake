@@ -1,0 +1,18 @@
+[package]
+
+name = "rustedflake"
+version = "0.0.1"
+authors = ["JubBoy333@gmail.com"]
+
+[[bin]]
+
+name = "service"
+path = "src/main.rs"
+
+[dependencies.nickel]
+
+git = "https://github.com/nickel-org/nickel.rs.git"
+
+[dependencies.lazy_static]
+
+git = "https://github.com/Kimundi/lazy-static.rs.git"
